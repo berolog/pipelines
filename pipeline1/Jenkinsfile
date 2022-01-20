@@ -1,10 +1,25 @@
 pipeline {
     agent { label 'docker-slave-ssh' }
     stages {
-            stage('Test') { 
+            stage('Clone') { 
+            steps {
+                sh 'git clone git@github.com:berolog/scripts.git'
+            }
+            }
+    }
+    stages {
+            stage('Build') {
+            steps {
+                sh './build.sh'
+            }
+            }
+    }
+    stages {
+            stage('Test') {
             steps {
                 echo 'Hello world'
             }
             }
     }
+
 }
