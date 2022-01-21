@@ -1,0 +1,34 @@
+pipeline {
+    agent { label 'docker-slave-ssh'}
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm: [$class: 'GitSCM', 
+                userRemoteConfigs: [[url: 'https://github.com/jenkinsci/prometheus-plugin.git']],
+                branches: [[name: 'refs/tags/prometheus-2.0.10']]],
+                poll: false
+            }
+        }
+        
+        stage('Build') {
+            steps {
+                sh '/opt/apache-maven-3.8.4/bin/mvn clean install'
+                sh '/opt/apache-maven-3.8.4/bin/mvn hpi:hpi'
+            }
+        }
+        
+        stage('Test') {
+            steps {
+                sh '/opt/apache-maven-3.8.4/bin/mvn test'
+            }
+        }
+    }
+    
+    post {
+        success {
+            archiveArtifacts artifacts: '*/**.jar'
+        }
+    }
+}
+
