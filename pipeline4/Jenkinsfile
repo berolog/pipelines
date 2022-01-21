@@ -1,0 +1,53 @@
+def generator = '''#!/usr/bin/env bash
+if [ $(( $RANDOM % 4 + 0 )) -eq 0 ]; then
+    echo "Vse norm, prodoljaem"
+else
+    echo "Zakanchivaem..."
+    exit 1
+fi'''
+
+pipeline {
+    agent { label 'docker-slave-jnlp'}
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm: [$class: 'GitSCM', 
+                userRemoteConfigs: [[url: 'https://github.com/jenkinsci/prometheus-plugin.git']],
+                branches: [[name: 'refs/tags/prometheus-2.0.10']]],
+                poll: false
+                
+                writeFile file: 'generator.sh', text: generator
+                sh 'chmod +x generator.sh'
+            }
+        }
+        
+        stage('Build') {
+            steps {
+                sleep 40
+                sh './generator.sh'
+                
+                sh '/opt/apache-maven-3.8.4/bin/mvn clean install -DskipTests'
+                sh '/opt/apache-maven-3.8.4/bin/mvn hpi:hpi'
+            }
+        }
+        
+        stage('Test') {
+            steps {
+                sleep 10
+                sh './generator.sh'
+                
+                sh '/opt/apache-maven-3.8.4/bin/mvn test'
+                sh '/opt/apache-maven-3.8.4/bin/mvn spotbugs:check'
+            }
+        }
+    }
+    
+    post {
+        success {
+            archiveArtifacts artifacts: '*/**.jar'
+
+        }
+    }
+}
+
