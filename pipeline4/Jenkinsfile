@@ -1,9 +1,10 @@
 def generator = '''#!/usr/bin/env bash
-if [ $(( $RANDOM % 4 + 0 )) -eq 0 ]; then
-    echo "Vse norm, prodoljaem"
+CODE=$(( $RANDOM % 4 + 0 ))
+if [ $CODE -eq 0 ]; then
+    echo "Vse norm, prodoljaem(Code: 0)"
 else
-    echo "Zakanchivaem..."
-    exit 1
+    echo "Zakanchivaem...(Code: $CODE)"
+    exit $CODE
 fi'''
 
 pipeline {
