@@ -17,9 +17,7 @@ node('docker-slave-jnlp') {
 
 def pipeline() {
     stage('Clone') {
-        git branch: 'dev',
-        credentialsId: 'ssh-key-vm2',
-        url: 'git@github.com:berolog/scripts.git' 
+        git 'https://github.com/berolog/scripts.git' 
     }
     
     stage('Build') { 
