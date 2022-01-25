@@ -3,7 +3,7 @@ pipeline {
     stages {
             stage('Clone') {
             steps {
-                git branch: 'dev', 
+                git branch: env.ghprbSourceBranch, 
                 credentialsId: 'ssh-key-vm2', 
                 url: 'git@github.com:berolog/scripts.git'
             }
