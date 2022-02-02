@@ -1,5 +1,5 @@
 pipeline {
-    agent { label 'docker-slave-ssh'}
+    agent { label 'master'}
 
     stages {
         stage('Checkout') {
@@ -13,14 +13,14 @@ pipeline {
         
         stage('Build') {
             steps {
-                sh '/opt/apache-maven-3.8.4/bin/mvn clean install'
-                sh '/opt/apache-maven-3.8.4/bin/mvn hpi:hpi'
+                sh 'mvn clean install'
+                sh 'mvn hpi:hpi'
             }
         }
         
         stage('Test') {
             steps {
-                sh '/opt/apache-maven-3.8.4/bin/mvn test'
+                sh 'mvn test'
             }
         }
     }
