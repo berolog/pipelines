@@ -13,14 +13,14 @@ pipeline {
         
         stage('Build') {
             steps {
-                sh 'mvn clean install'
-                sh 'mvn hpi:hpi'
+                sh '/bin/mvn clean install'
+                sh '/bin/mvn hpi:hpi'
             }
         }
         
         stage('Test') {
             steps {
-                sh 'mvn test'
+                sh '/bin/mvn test'
             }
         }
     }
