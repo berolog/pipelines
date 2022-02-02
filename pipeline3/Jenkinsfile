@@ -28,6 +28,7 @@ pipeline {
     post {
         success {
             archiveArtifacts artifacts: '*/**.jar'
+            archiveArtifacts artifacts: '*/**.hpi'
         }
     }
 }
