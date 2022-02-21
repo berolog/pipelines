@@ -30,4 +30,5 @@ def call() {
             writeFile file: cfg.alwaysArtifact, text: currentBuild.result
             archiveArtifacts artifacts: cfg.alwaysArtifact
         }
+    }
 }
