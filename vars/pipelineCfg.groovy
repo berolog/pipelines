@@ -1,6 +1,6 @@
 #!/usr/bin/env groovy
 
-def call() {
-    Map pipelineCfg = readYaml(file: "${WORKSPACE}/cfg.yaml")
+def call(String pipeline) {
+    Map pipelineCfg = readYaml(file: "${WORKSPACE}/${pipeline}/cfg.yaml")
     return pipelineCfg
 }
