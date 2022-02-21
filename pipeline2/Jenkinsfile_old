@@ -1,0 +1,39 @@
+node('docker-slave-jnlp') {  
+    try {
+        pipeline()
+        currentBuild.result = 'SUCCESS'
+    }
+    
+    catch (e) {
+        postFailure(e)
+        currentBuild.result = 'FAILURE'
+        throw e
+    }
+    
+    finally {
+        postAlways()
+    }
+}
+
+def pipeline() {
+    stage('Clone') {
+        git 'https://github.com/berolog/scripts.git' 
+    }
+    
+    stage('Build') { 
+        sh './build.sh'
+    }
+        
+    stage('Test') { 
+        sh './test.sh > test_result.txt'
+    }
+}
+
+def postFailure(e) {
+    archiveArtifacts artifacts: 'test_result.txt'
+}
+
+def postAlways() {
+    writeFile file: 'artifact.txt', text: currentBuild.result
+    archiveArtifacts artifacts: 'artifact.txt'
+}
