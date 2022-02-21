@@ -1,0 +1,7 @@
+type: declarative
+gitRepo: https://github.com/berolog/scripts.git
+gitBranch: master
+buildCommand: ./build.sh
+testCommand: ./test.sh
+alwaysArtifact: artifact.txt
+failureArtifact: test_result.txt
