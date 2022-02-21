@@ -2,7 +2,7 @@
 
 def call() {
     node {
-        def cfg = pipelineCfg('pipeline2')
+        def cfg = pipelineCfg()
 
         try {
             stage('Checkout') {
