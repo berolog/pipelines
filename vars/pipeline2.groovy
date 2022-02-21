@@ -2,12 +2,13 @@
 
 def call() {
     node {
-        def cfg = pipelineCfg('pipeline2')
 
         try {
             stage('Checkout') {
-                git cfg.gitRepo
+                git 'https://github.com/berolog/scripts.git'
             }
+
+            def cfg = pipelineCfg()
 
             stage('Build') {
                 sh cfg.buildCommand
