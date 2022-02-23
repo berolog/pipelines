@@ -6,7 +6,7 @@ def call(String mvn=null) {
     } 
     
     else {
-        sh 'mvn clean install'
-        sh 'mvn hpi:hpi'
+        sh "${mvn} clean install"
+        sh "${mvn} hpi:hpi"
     }
 }
