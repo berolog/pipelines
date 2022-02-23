@@ -8,28 +8,28 @@ def call() {
                 git 'https://github.com/berolog/scripts.git'
             }
 
-            def cfg = pipelineCfg()
+            /* def cfg = pipelineCfg() */
 
             stage('Build') {
-                sh cfg.buildCommand
+                sh './build.sh'
             }
 
             stage('Test') {
-                sh "${cfg.testCommand} > ${cfg.failureArtifact}"
+                sh "./test.sh > test_results.txt"
             }
 
             currentBuild.result = 'SUCCESS'
         }
 
         catch(e) {
-            archiveArtifacts artifacts: cfg.failureArtifact
+            archiveArtifacts artifacts: 'test_results.txt'
             currentBuild.result = 'FAILURE'
             throw e
         }
 
         finally {
-            writeFile file: cfg.alwaysArtifact, text: currentBuild.result
-            archiveArtifacts artifacts: cfg.alwaysArtifact
+            writeFile file: 'artifact.txt', text: currentBuild.result
+            archiveArtifacts artifacts: 'artifact.txt'
         }
     }
 }
