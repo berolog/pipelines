@@ -5,17 +5,15 @@ def call() {
 
         try {
             stage('Checkout') {
-                git 'https://github.com/berolog/scripts.git'
+                checkoutFrom('master', 'https://github.com/berolog/scripts.git')
             }
 
-            /* def cfg = pipelineCfg() */
-
             stage('Build') {
-                sh './build.sh'
+                buildStep()
             }
 
             stage('Test') {
-                sh "./test.sh > test_results.txt"
+                testStep()
             }
 
             currentBuild.result = 'SUCCESS'
