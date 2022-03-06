@@ -1,28 +1,33 @@
+@Library('groovy-task') _
 pipeline {
-    agent { label 'docker-slave-ssh' }
+    agent any
     stages {
-            stage('Clone') {
+        stage('Checkout') {
             steps {
-                git branch: env.ghprbSourceBranch, 
-                credentialsId: 'ssh-key-vm2', 
-                url: 'git@github.com:berolog/scripts.git'
+                script {
+                    checkoutFrom('master', 'https://github.com/berolog/scripts.git')
+                }              /* env.ghprbSourceBranch */
+            
             }
-            }
-    
-            stage('Build') {
+        }
+        stage('Build') {
             steps {
-                sh './build.sh'
+                script {
+                    buildStep()
+                }
             }
-            }
-            stage('Test') {
+        }
+        stage('Test') {
             steps {
-                sh './test.sh > test_result.txt'
+                script {
+                    testStep()
+                }
             }
-            }
+        }
     }
     post {
         always {
-            writeFile file: 'artifact.txt', text: currentBuild.result 
+            writeFile file: 'artifact.txt', text: currentBuild.result
             archiveArtifacts artifacts: 'artifact.txt'
         }
         failure {
