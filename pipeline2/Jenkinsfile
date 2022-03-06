@@ -1,2 +1,2 @@
-@Library('groovy-task')
+@Library('groovy-task') _
 pipeline2()
