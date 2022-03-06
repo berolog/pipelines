@@ -1,56 +1,45 @@
-def generator = '''#!/usr/bin/env bash
-CODE=$(( $RANDOM % 4 + 0 ))
-if [ $CODE -eq 0 ]; then
-    echo "Vse norm, prodoljaem(Code: 0)"
-else
-    echo "Zakanchivaem...(Code: $CODE)"
-    exit $CODE
-fi'''
-
+@Library('groovy-task') _
 def rnd = new Random()
+def mvn = '/opt/apache-maven-3.8.4/bin/mvn'
 
 pipeline {
-    agent { label 'docker-slave-jnlp'}
+    agent { label 'mvn'}
 
     stages {
         stage('Checkout') {
             steps {
-                checkout scm: [$class: 'GitSCM', 
-                userRemoteConfigs: [[url: 'https://github.com/jenkinsci/prometheus-plugin.git']],
-                branches: [[name: 'refs/tags/prometheus-2.0.10']]],
-                poll: false
-                
-                writeFile file: 'generator.sh', text: generator
-                sh 'chmod +x generator.sh'
+                script {
+                    checkoutFrom('refs/tags/prometheus-2.0.10', 'https://github.com/jenkinsci/prometheus-plugin.git')
+                }
             }
         }
-        
+
         stage('Build') {
             steps {
-                sleep Math.abs(rnd.nextInt() % (60 - 10)) + 10
-                sh './generator.sh'
-                
-                sh '/opt/apache-maven-3.8.4/bin/mvn clean install'
-                sh '/opt/apache-maven-3.8.4/bin/mvn hpi:hpi'
+                script {
+                    sleep Math.abs(rnd.nextInt() % (60 - 10)) + 10
+                    sh(libraryResource('generator.sh'))
+                    buildStep(mvn)              
+                }
             }
         }
-        
+
         stage('Test') {
             steps {
-                sleep Math.abs(rnd.nextInt() % (60 - 10)) + 10
-                sh './generator.sh'
-                
-                sh '/opt/apache-maven-3.8.4/bin/mvn test'
-                sh '/opt/apache-maven-3.8.4/bin/mvn spotbugs:check'
+                script {
+                    sleep Math.abs(rnd.nextInt() % (60 - 10)) + 10
+                    sh(libraryResource('generator.sh'))
+                    testStep(mvn)
+                }
             }
         }
     }
-    
+
     post {
         success {
             archiveArtifacts artifacts: '*/**.jar'
+            archiveArtifacts artifacts: '*/**.hpi'
 
         }
     }
 }
-
